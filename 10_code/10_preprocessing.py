@@ -70,7 +70,7 @@ def filter_columns(col_type: str, df):
 def data_with_relevant_columns(df):
     all_cols = df.columns.to_list()
     general_cols = all_cols[:14]
-    categories = ['arrests', 'black', 'white', 'asian', 'male', 'female']
+    categories = ['arrests', 'black', 'white', 'asian', 'male', 'female', 'amer_ind']
     relevant_cols = general_cols
     for cat in categories:
         col = filter_columns(cat, df)
@@ -108,6 +108,7 @@ def create_new_columns(df):
     non_violent_black = filter_columns("black", df)
     non_violent_white = filter_columns("white", df)
     non_violent_asian = filter_columns("asian", df)
+    non_violent_amer_ind = filter_columns("amer_ind", df)
     non_violent_male = filter_columns("male", df)
     non_violent_female = filter_columns("female", df)
 
@@ -124,6 +125,7 @@ def create_new_columns(df):
     df['grand_total_black'] = np.sum(merged[non_violent_black], axis=1)
     df['grand_total_white'] = np.sum(merged[non_violent_white], axis=1)
     df['grand_total_asian'] = np.sum(merged[non_violent_asian], axis=1)
+    df['grand_total_amer_ind'] = np.sum(merged[non_violent_amer_ind], axis=1)
     df['grand_total_male'] = np.sum(merged[non_violent_male], axis=1)
     df['grand_total_female'] = np.sum(merged[non_violent_female], axis=1)
 
@@ -132,12 +134,15 @@ def create_new_columns(df):
     df['arrest_rate_gt_black'] = (df['grand_total_black'] / df['population'] * 100_000)
     df['arrest_rate_gt_white'] = (df['grand_total_white'] / df['population'] * 100_000)
     df['arrest_rate_gt_asian'] = (df['grand_total_asian'] / df['population'] * 100_000)
+    df['arrest_rate_gt_amer_ind'] = (df['grand_total_amer_ind'] / df['population'] * 100_000)
     df['arrest_rate_gt_male'] = (df['grand_total_male'] / df['population'] * 100_000)
     df['arrest_rate_gt_female'] = (df['grand_total_female'] / df['population'] * 100_000)
 
     # Drop redundant columns:
-    df.drop(non_violent_arrests + non_violent_black + non_violent_asian +
-            non_violent_male + non_violent_female + non_violent_white,
+    df.drop(non_violent_arrests + non_violent_black +
+            non_violent_asian + non_violent_male +
+            non_violent_female + non_violent_white +
+            non_violent_amer_ind,
             axis=1, inplace=True)
 
     # Add post treatment and treatment columns:
@@ -165,9 +170,9 @@ if __name__ == '__main__':
                       'fips_state_county_code'] = '08031'
 
     # Save ori and fips codes
-    # (arrest_concat[['ori', 'fips_state_county_code']]
-    #  .drop_duplicates()
-    #  .to_csv("20_intermediate_files/ori.csv", index=False))
+    (arrest_concat[['ori', 'fips_state_county_code']]
+     .drop_duplicates()
+     .to_csv("20_intermediate_files/ori.csv", index=False))
 
     # Filter by fips code
     fips_codes = ['08031', '08013', '08014', '08001', '08041']

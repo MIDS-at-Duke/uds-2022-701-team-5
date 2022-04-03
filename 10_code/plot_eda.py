@@ -1,4 +1,3 @@
-from data_cleaning import all_process
 from pandas.api.types import CategoricalDtype
 import seaborn as sns
 import pandas as pd

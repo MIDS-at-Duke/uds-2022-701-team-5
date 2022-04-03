@@ -40,7 +40,7 @@ def match_columns(df1, df2):
     elif df1_cols == df2_cols:
         return df1, df2
     else:
-        raise ValueError("Take a look!")
+        raise ValueError("Take a look! The dataframes are out of shape!")
 
 
 def filter_by_state_concat(df1, df2, state='CO'):

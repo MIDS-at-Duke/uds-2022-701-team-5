@@ -175,7 +175,7 @@ if __name__ == '__main__':
      .to_csv("20_intermediate_files/ori.csv", index=False))
 
     # Filter by fips code
-    fips_codes = ['08031', '08013', '08014', '08001', '08041']
+    fips_codes = ['08031', '08059', '08005', '08001', '08014', '08035', '08013']
     arrest_concat = arrest_concat.query(f"fips_state_county_code in {fips_codes}")
 
     # Filter columns

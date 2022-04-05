@@ -1,7 +1,7 @@
 from pandas.api.types import CategoricalDtype
 import seaborn as sns
 import pandas as pd
-
+import altair as alt
 
 def plot_monthly_total_rate_trend(df: pd.DataFrame, col_type: str):
     """
@@ -88,6 +88,25 @@ def plot_monthly_certain_arrest_rate(df: pd.DataFrame, col_type: str, crime_type
     )
 
 
+def plot_grouped_arrest_trend(df):
+
+
+    grouped_means = df.groupby(["treatment", "date"], as_index=False)[
+        ["arrest_rate_gt_arrests"]
+    ].mean()
+    scatter = (
+        alt.Chart(grouped_means)
+        .mark_line()
+        .encode(
+            x=alt.X("date:T", scale=alt.Scale(zero=False)),
+            y=alt.Y("arrest_rate_gt_arrests:Q", scale=alt.Scale(zero=False)),
+            color="treatment:N",
+        )
+    )
+    return scatter.properties(
+        title='Mean Total Arrest Rate by Time'
+    )
+
 def main():
     df_total_arrest = pd.read_csv("./20_intermediate_files/aggregated.csv")
     plot_monthly_total_rate_trend(df_total_arrest, "arrests")
@@ -97,6 +116,7 @@ def main():
     plot_monthly_total_rate_trend(df_total_arrest, "white")
     plot_monthly_total_rate_trend(df_total_arrest, "asian")
     plot_monthly_total_rate_trend(df_total_arrest, "amer_ind")
+    plot_grouped_arrest_trend(df_total_arrest )
 
 
 if __name__ == main:

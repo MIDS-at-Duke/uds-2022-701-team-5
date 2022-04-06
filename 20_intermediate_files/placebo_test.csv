@@ -1,0 +1,15 @@
+coefficient name,coef,std err,t,p-value,0.025,0.975,independent variable
+post_treatment,-82.629,33.382,-2.4753,0.0150,-148.87,-16.393,arrest_rate_gt_arrests
+post_treatment:treatment,-33.945,36.966,-0.9183,0.3607,-107.29,39.403,arrest_rate_gt_arrests
+post_treatment,-5.1917,4.3578,-1.1913,0.2364,-13.839,3.4552,arrest_rate_gt_black
+post_treatment:treatment,-17.841,4.2315,-4.2163,0.0001,-26.237,-9.4449,arrest_rate_gt_black
+post_treatment,-75.695,31.130,-2.4316,0.0168,-137.46,-13.927,arrest_rate_gt_white
+post_treatment:treatment,-15.304,34.321,-0.4459,0.6566,-83.404,52.795,arrest_rate_gt_white
+post_treatment,-1.6564,0.6756,-2.4516,0.0160,-2.9970,-0.3158,arrest_rate_gt_asian
+post_treatment:treatment,1.0217,0.5711,1.7891,0.0767,-0.1115,2.1549,arrest_rate_gt_asian
+post_treatment,-0.0559,0.4260,-0.1313,0.8958,-0.9012,0.7893,arrest_rate_gt_amer_ind
+post_treatment:treatment,-1.8061,0.2870,-6.2930,0.0000,-2.3756,-1.2366,arrest_rate_gt_amer_ind
+post_treatment,-50.925,21.418,-2.3777,0.0193,-93.423,-8.4269,arrest_rate_gt_male
+post_treatment:treatment,-26.096,25.196,-1.0357,0.3029,-76.090,23.898,arrest_rate_gt_male
+post_treatment,-31.704,12.285,-2.5806,0.0113,-56.081,-7.3273,arrest_rate_gt_female
+post_treatment:treatment,-7.8491,12.072,-0.6502,0.5171,-31.803,16.105,arrest_rate_gt_female

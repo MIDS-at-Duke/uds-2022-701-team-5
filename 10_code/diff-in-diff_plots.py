@@ -25,7 +25,7 @@ post_star = df[df["post_treatment"] == 1]
 # split the dataframes further into treated and control groups
 pre_star_treat = pre_star[pre_star["treatment"] == 1]
 pre_star_control = pre_star[pre_star["treatment"] == 0]
-post_star_treat = post_star[post_star["treatment"] == 0]
+post_star_treat = post_star[post_star["treatment"] == 1]
 post_star_control = post_star[post_star["treatment"] == 0]
 
 # calculate the average arrest rate for each county pre- and post-STAR

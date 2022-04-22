@@ -77,6 +77,31 @@ def data_with_relevant_columns(df):
         relevant_cols += col
     return df[relevant_cols]
 
+## Specific for violent arrests
+def filter_columns_violent(col_type: str, df):
+    """
+    :return:
+    """
+    violent_crime_c = ['agg_assault_tot', 'arson_tot', 'burglary_tot',
+                       'manslaught_neg_tot', 'murder_tot', 'oth_assault_tot',
+                       'oth_sex_off_tot', 'rape_tot', 'robbery_tot']
+    cols = [col for col in df.columns if col.endswith('tot_' + col_type)]
+    violent_s = [i + '_' + col_type for i in violent_crime_c]
+    non_violent_columns = list(set(cols).difference(set(violent_s)))
+    return violent_s
+
+## Specific for violent arrests 
+def data_with_relevant_columns_violent(df):
+    all_cols = df.columns.to_list()
+    general_cols = all_cols[:14]
+    categories = ['arrests', 'black', 'white', 'asian', 'male', 'female', 'amer_ind']
+    relevant_cols = general_cols
+    for cat in categories:
+        col = filter_columns_violent(cat, df)
+        relevant_cols += col
+    return df[relevant_cols]
+
+
 
 def population(df, group1, group2, save=False):
     """
@@ -93,7 +118,7 @@ def population(df, group1, group2, save=False):
                        .groupby(group2, as_index=False)[['population']]
                        .sum())
     if save:
-        population_data.to_csv("20_intermediate_files/population.csv", index=False)
+        population_data.to_csv("../20_intermediate_files/population.csv", index=False)
     return population_data
 
 
@@ -156,7 +181,7 @@ def create_new_columns(df):
 
 
 if __name__ == '__main__':
-    DATA_PATH = "00_source_data"
+    DATA_PATH = "../00_source_data"
     ARREST_DATA = os.path.join(DATA_PATH,
                                'ucr_arrests_monthly_all'
                                '_crimes_race_sex_1974_2020_dta.zip')
@@ -172,7 +197,7 @@ if __name__ == '__main__':
     # Save ori and fips codes
     (arrest_concat[['ori', 'fips_state_county_code']]
      .drop_duplicates()
-     .to_csv("20_intermediate_files/ori.csv", index=False))
+     .to_csv("../20_intermediate_files/ori.csv", index=False))
 
     # Filter by fips code
     fips_codes = ['08031', '08013', '08014', '08001', '08041']
@@ -196,4 +221,15 @@ if __name__ == '__main__':
                       on=group2)
 
     final_df = create_new_columns(merged)
-    final_df.to_csv("20_intermediate_files/aggregated.csv", index=False)
+    final_df.to_csv("../20_intermediate_files/aggregated.csv", index=False)
+    ## Violent related 
+    ## other things are the same only the columns are different 
+    arrest_concat_vio = data_with_relevant_columns_violent(arrest_concat)
+    arrests_agg_vio = (arrest_concat_vio
+                   .groupby(group2, as_index=False)[cols_to_aggregate]
+                   .sum())
+    merged_vio = pd.merge(arrests_agg_vio,
+                      population_norm,
+                      on=group2)
+    final_df_vio = create_new_columns(merged_vio)
+    final_df_vio.to_csv("../20_intermediate_files/aggregated_violent_arrest.csv", index=False)

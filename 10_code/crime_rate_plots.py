@@ -9,10 +9,8 @@ import datetime
 from datetime import datetime
 import altair as alt
 
-# %%
-# importing crime data file
 df_full = pd.read_csv(
-    "https://raw.githubusercontent.com/MIDS-at-Duke/uds-2022-701-team-5/modelling/20_intermediate_files/crime_rate.csv?token=GHSAT0AAAAAABRFFJ6OJ3DFPR63G2FW7AHQYSYL7MA"
+    "../20_intermediate_files/crime_rate.csv"
 )
 
 # %%
@@ -43,7 +41,7 @@ df["treatment"] = np.where(df["fips"] == 8031, 1, 0)
 df_full["date"] = pd.to_datetime(
     df_full.DATA_YEAR.astype(str) + "-" + df_full.month + "-01", format="%Y-%b-%d"
 )
-df_full["treatment"] = np.where(df_full["fips"] == 8031, 1, 0)
+df_full["treatment"] = np.where(df_full["fips"] == 8031, 'treatment', 'control')
 
 # %%
 # Seprating violent and non violent into 2 dataframes
@@ -56,7 +54,8 @@ df_full_nonviolent = df_full.loc[df_full["violent_crime"] == 0, :]
 # %%
 # Function to create plots
 def plot_crime_rate_trend(df, crime_type):
-
+    domain = ['control', 'treatment']
+    range_ = ['blue', 'red']
     grouped_means = df.groupby(["treatment", "date"], as_index=False)[
         ["crime_rate"]
     ].mean()
@@ -64,9 +63,9 @@ def plot_crime_rate_trend(df, crime_type):
         alt.Chart(grouped_means)
         .mark_line()
         .encode(
-            x=alt.X("date:T", scale=alt.Scale(zero=False)),
-            y=alt.Y("crime_rate:Q", scale=alt.Scale(zero=False)),
-            color="treatment:N",
+            alt.X("date:T", scale=alt.Scale(zero=False), axis=alt.Axis(title='Date')),
+            alt.Y("crime_rate:Q", scale=alt.Scale(zero=False), axis=alt.Axis(title='Crime Rate')),
+            alt.Color("treatment:N",scale=alt.Scale(domain=domain, range=range_))
         )
     )
     return scatter.properties(
@@ -81,3 +80,4 @@ plot_crime_rate_trend(df_violent, "Violent")
 # For complete review period
 plot_crime_rate_trend(df_full_nonviolent, "Non-Violent")
 plot_crime_rate_trend(df_full_violent, "Non-Violent")
+

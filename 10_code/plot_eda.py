@@ -1,7 +1,7 @@
 from pandas.api.types import CategoricalDtype
 import seaborn as sns
 import pandas as pd
-import numpy as np 
+import numpy as np
 import altair as alt
 
 
@@ -89,13 +89,14 @@ def plot_monthly_certain_arrest_rate(df: pd.DataFrame, col_type: str, crime_type
         loc="upper right",
     )
 
-def plot_grouped_arrest_trend(df, arrest_type:str):
+
+def plot_grouped_arrest_trend(df, arrest_type: str):
     """
-    Plot mean arrest trend over time 
+    Plot mean arrest trend over time
     arrest_type: string specifying whether it's violent arrests or non-violent arrests
     """
-    domain = ['control', 'treatment']
-    range_ = ['blue', 'red']
+    domain = ["Control", "Treatment"]
+    range_ = ["blue", "red"]
 
     grouped_means = df.groupby(["treatment", "date"], as_index=False)[
         ["arrest_rate_gt_arrests"]
@@ -104,21 +105,41 @@ def plot_grouped_arrest_trend(df, arrest_type:str):
         alt.Chart(grouped_means)
         .mark_line()
         .encode(
-            alt.X("date:T", scale=alt.Scale(zero=False), axis=alt.Axis(title='Date')),
-            alt.Y("arrest_rate_gt_arrests:Q", scale=alt.Scale(zero=False),axis=alt.Axis(title='Arrest Rate')),
-            alt.Color("treatment:N", scale=alt.Scale(domain=domain, range=range_))
+            alt.X("date:T", scale=alt.Scale(zero=False), axis=alt.Axis(title="Date")),
+            alt.Y(
+                "arrest_rate_gt_arrests:Q",
+                scale=alt.Scale(zero=False),
+                axis=alt.Axis(title="Arrest Rate (per 100,000 people)"),
+            ),
+            alt.Color(
+                "treatment:N",
+                legend=alt.Legend(title="Legend"),
+                scale=alt.Scale(domain=domain, range=range_),
+            ),
         )
     )
-    return scatter.properties(title="Mean Total " + arrest_type+ " Arrest Rate by Time")
+    rule = (
+        alt.Chart(pd.DataFrame({"date": ["2020-06-01"], "color": ["black"]}))
+        .mark_rule()
+        .encode(x="date:T", color=alt.Color("color:N", scale=None))
+    )
 
-
-
+    return (scatter + rule).properties(
+        title="Average Arrest Rate over Time (" + arrest_type + ")",
+        width=600,
+        height=350,
+    )
 
 
 def main():
-    ## non violent arrests 
+    ## non violent arrests
     df_total_arrest = pd.read_csv("../20_intermediate_files/aggregated.csv")
-    df_total_arrest['treatment'] = np.where(df_total_arrest['treatment']==1, 'treatment', 'control') 
+    df_total_arrest["treatment"] = np.where(
+        df_total_arrest["treatment"] == 1, "Treatment", "Control"
+    )
+    df_total_arrest_pre = df_total_arrest[df_total_arrest["post_treatment"] == 0]
+    # df_total_arrest_post = df_total_arrest[df_total_arrest.loc["post_treatment"]==1]
+
     plot_monthly_total_rate_trend(df_total_arrest, "arrests")
     plot_monthly_total_rate_trend(df_total_arrest, "male")
     plot_monthly_total_rate_trend(df_total_arrest, "female")
@@ -126,12 +147,25 @@ def main():
     plot_monthly_total_rate_trend(df_total_arrest, "white")
     plot_monthly_total_rate_trend(df_total_arrest, "asian")
     plot_monthly_total_rate_trend(df_total_arrest, "amer_ind")
-    plot_grouped_arrest_trend(df_total_arrest, 'Non-violent')
-    ## violent arrests 
-    df_total_arrest_vio = pd.read_csv("../20_intermediate_files/aggregated_violent_arrest.csv")
-    df_total_arrest_vio['treatment'] = np.where(df_total_arrest_vio['treatment']==1, 'treatment', 'control') 
-    plot_grouped_arrest_trend(df_total_arrest)
-    plot_grouped_arrest_trend(df_total_arrest_vio,'Violent')
+    plot_grouped_arrest_trend(df_total_arrest, "Non-violent")
+    plot_grouped_arrest_trend(df_total_arrest_pre, "Non-violent")
+
+    ## violent arrests
+    df_total_arrest_vio = pd.read_csv(
+        "../20_intermediate_files/aggregated_violent_arrest.csv"
+    )
+    df_total_arrest_vio["treatment"] = np.where(
+        df_total_arrest_vio["treatment"] == 1, "Treatment", "Control"
+    )
+    df_total_arrest_vio_pre = df_total_arrest_vio[
+        df_total_arrest_vio["post_treatment"] == 0
+    ]
+    # df_total_arrest__vio_post = df_total_arrest_vio[df_total_arrest_vio["post_treatment"]==1]
+
+    plot_grouped_arrest_trend(df_total_arrest, "Both")
+    plot_grouped_arrest_trend(df_total_arrest_vio, "Violent")
+    plot_grouped_arrest_trend(df_total_arrest_vio_pre, "Violent")
+
 
 if __name__ == main:
     main()
